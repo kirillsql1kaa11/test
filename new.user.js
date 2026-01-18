@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         ITD Extended Client 1.2
-// @version      1.2
-// @description  Исправлены некоторые скрипты итд
+// @name         ITD Extended Client 1.3.1
+// @version      1.3.1
+// @description  Исправлена совместимость с модулями и ИИ чатом
 // @author       l1kaa11
 // @match        https://xn--d1ah4a.com/*
 // @grant        GM_addStyle
@@ -10,6 +10,7 @@
 // @grant        GM_xmlhttpRequest
 // @connect      gist.githubusercontent.com
 // @connect      raw.githubusercontent.com
+// @connect      api.groq.com
 // @run-at       document-end
 // @namespace    https://github.com/kirillsql1kaa11/test
 // @updateURL    https://github.com/kirillsql1kaa11/test/raw/refs/heads/main/new.user.js
@@ -80,6 +81,7 @@
 
     let customModules = GM_getValue('custom_modules_v2', []);
 
+    // Стили интерфейса
     GM_addStyle(`
         #itd-gui .gui-body::-webkit-scrollbar { width: 4px; }
         #itd-gui .gui-body::-webkit-scrollbar-track { background: transparent; }
@@ -87,7 +89,7 @@
         #itd-gui .gui-body:hover::-webkit-scrollbar-thumb { background: #444; }
         #itd-gui { position: fixed; top: 10%; left: 10%; width: 80%; height: 80%; background: #08080a; border: 1px solid #222; border-radius: 30px; z-index: 999998; display: none; color: white; flex-direction: column; overflow: hidden; box-shadow: 0 0 150px rgba(0,0,0,0.9); font-family: system-ui, sans-serif; }
         .gui-head { padding: 25px 35px; background: #111114; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        .gui-body { flex: 1; padding: 30px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-content: start; scrollbar-width: thin; scrollbar-color: #333 transparent; }
+        .gui-body { flex: 1; padding: 30px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-content: start; }
         .mod-card { background: #141417; border: 1px solid #222; padding: 20px; border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: 0.2s; }
         .active-border { border-left: 5px solid #007aff !important; background: #18181c !important; }
         .mod-name { font-weight: bold; font-size: 18px; color: #fff; margin-bottom: 4px; }
@@ -97,15 +99,20 @@
         .on { background: #28a745; color: #fff; }
         .off { background: #222; color: #888; border: 1px solid #333; }
         .upload-zone { grid-column: 1 / -1; background: #111114; border: 2px dashed #333; padding: 20px; border-radius: 20px; text-align: center; cursor: pointer; color: #007aff; font-weight: bold; margin-bottom: 10px; }
-        #itd-sidebar-btn svg { transition: transform 0.3s ease; }
-        #itd-sidebar-btn:hover svg { transform: rotate(45deg); color: #007aff; }
     `);
 
     const Client = {
         init() {
+            // ВАЖНО: Пробрасываем API в глобальное окно для модулей
+            window.GM_getValue = GM_getValue;
+            window.GM_setValue = GM_setValue;
+            window.GM_addStyle = GM_addStyle;
+            window.GM_xmlhttpRequest = GM_xmlhttpRequest;
+
             this.createModal();
             this.injectSidebarButton();
             this.runScripts();
+            
             const observer = new MutationObserver(() => this.injectSidebarButton());
             observer.observe(document.body, { childList: true, subtree: true });
         },
@@ -117,7 +124,7 @@
             btn.id = 'itd-sidebar-btn';
             btn.className = 'sidebar-nav-item svelte-13vg9xt';
             btn.style.cursor = 'pointer';
-            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="24" height="24"><path fill="currentColor" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path><path fill="currentColor" fill-rule="evenodd" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" clip-rule="evenodd"></path></svg>`;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="24" height="24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
             btn.onclick = (e) => {
                 e.preventDefault();
                 const gui = document.getElementById('itd-gui');
@@ -132,7 +139,7 @@
             gui.id = 'itd-gui';
             gui.innerHTML = `
                 <div class="gui-head">
-                    <div><h2 style="margin:0;">ITD Extended Client betaV1.4 </h2><small style="color:#007aff">Список модов</small></div>
+                    <div><h2 style="margin:0;">ITD Extended Client 1.3</h2><small style="color:#007aff">Инженерная сборка</small></div>
                     <span id="itd-close" style="cursor:pointer; font-size:28px;">✕</span>
                 </div>
                 <div class="gui-body">
@@ -159,14 +166,6 @@
             reader.readAsText(file);
         },
 
-        deleteModule(id) {
-            if (confirm('Вы уверены, что хотите удалить этот скрипт?')) {
-                customModules = customModules.filter(x => x.id !== id);
-                GM_setValue('custom_modules_v2', customModules);
-                this.renderModules(); 
-            }
-        },
-
         renderModules() {
             const container = document.getElementById('mod-container');
             const all = [
@@ -185,7 +184,6 @@
                         <button class="tgl-btn ${m.active ? 'on' : 'off'}" data-id="${m.id}" data-local="${m.isLocal}">
                             ${m.active ? 'ДЕАКТИВИРОВАТЬ' : 'АКТИВИРОВАТЬ'}
                         </button>
-                        ${m.isLocal ? `<button class="del-script-btn" style="color:#ff4444; background:none; border:none; cursor:pointer; font-size:11px;" data-id="${m.id}">Удалить скрипт</button>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -203,17 +201,15 @@
                     location.reload();
                 };
             });
-
-            container.querySelectorAll('.del-script-btn').forEach(b => {
-                b.onclick = () => this.deleteModule(b.dataset.id);
-            });
         },
 
         runScripts() {
             defaultModules.forEach(m => {
                 if (GM_getValue('m_' + m.id, false) && m.url) {
+                    const cacheBuster = `?v=${Date.now()}`;
                     GM_xmlhttpRequest({
-                        method: "GET", url: m.url,
+                        method: "GET", 
+                        url: m.url + cacheBuster,
                         onload: (res) => { if (res.status === 200) this.inject(res.responseText, m.name); }
                     });
                 }
@@ -224,17 +220,26 @@
         inject(code, name) {
             try {
                 const script = document.createElement('script');
-                const blob = new Blob([code], { type: 'text/javascript' });
+                // Оборачиваем код в мост для доступа к API Tampermonkey
+                const finalCode = `(function() {
+                    const GM_getValue = window.GM_getValue;
+                    const GM_setValue = window.GM_setValue;
+                    const GM_addStyle = window.GM_addStyle;
+                    const GM_xmlhttpRequest = window.GM_xmlhttpRequest;
+                    try {
+                        ${code}
+                    } catch(e) {
+                        console.error("[ITD Module Error] ${name}:", e);
+                    }
+                })();`;
+
+                const blob = new Blob([finalCode], { type: 'text/javascript' });
                 script.src = URL.createObjectURL(blob);
                 document.head.appendChild(script);
-            } catch (e) { console.error(`[ITD] Fail: ${name}`, e); }
+                console.log(`[ITD] Успешный запуск: ${name}`);
+            } catch (e) { console.error(`[ITD] Критическая ошибка инъекции: ${name}`, e); }
         }
     };
 
     Client.init();
 })();
-
-
-
-
-
