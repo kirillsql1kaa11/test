@@ -1,82 +1,29 @@
 // ==UserScript==
-// @name         ITD Extended Client v2.0
-// @version      2.0
-// @description  Исправлена совместимость с KAALITION AI и проброс API
+// @name         ITD Extended Client - test
+// @version      1.4.7
+// @description  Разделение модулей на категории
 // @author       l1kaa11
 // @match        https://xn--d1ah4a.com/*
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_xmlhttpRequest
-// @connect      gist.githubusercontent.com
-// @connect      raw.githubusercontent.com
-// @connect      api.groq.com
 // @run-at       document-end
 // @namespace    https://github.com/kirillsql1kaa11/test
-// @updateURL    https://github.com/kirillsql1kaa11/test/raw/refs/heads/main/ITDEXT.user.js
-// @downloadURL  https://github.com/kirillsql1kaa11/test/raw/refs/heads/main/ITDEXT.user.js
+// @updateURL    https://github.com/kirillsql1kaa11/test/raw/refs/heads/main/new.user.js
+// @downloadURL  https://github.com/kirillsql1kaa11/test/raw/refs/heads/main/new.user.js
 // ==/UserScript==
 
 (function() {
     'use strict';
 
     const defaultModules = [
-        {
-            id: 'kaalition',
-            name: '🚀 KAALITION AI PRO',
-            auth: '@newsoffc & @dmitrii_gr',
-            desc: 'Продвинутый ИИ-ассистент с системой плагинов и генератором постов.',
-            url: 'https://raw.githubusercontent.com/GleTur/KAALITION_AI/main/kaalition-ai.txt'
-        },
-        {
-            id: 'fresh',
-            name: 'ITD Свежак',
-            auth: '@l1ka11',
-            desc: 'Автоматически скрывает посты, опубликованные более 24 часов назад.',
-            url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/itdfresh.txt'
-        },
-        {
-            id: 'zoom',
-            name: 'ITD Приближение',
-            auth: '@l1kaa11',
-            desc: 'Позволяет увеличивать изображения при наведении и прокрутке колесиком.',
-            url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/itdscrollphoto.txt'
-        },
-        {
-            id: 'arts',
-            name: 'ITD Арты',
-            auth: '@l1kaa11',
-            desc: 'Улучшенный интерфейс для раздела рисования и просмотра артов.',
-            url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/ITDartex.txt'
-        },
-        {
-            id: 'counter',
-            name: 'ITD Счетчик',
-            auth: '@l1kaa11',
-            desc: 'Отображает точное количество загруженных постов в текущей ленте.',
-            url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/itdpostcounter.txt'
-        },
-        {
-            id: 'backgrounds',
-            name: 'ITD Фоны',
-            auth: '@l1kaa11',
-            desc: 'Применяет кастомные задние планы и анимированные GIF-фоны.',
-            url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/ITDbackground.txt'
-        },
-        {
-            id: 'profilesear',
-            name: 'Profile Search',
-            auth: '@dmitrii_gr (#дым)',
-            desc: 'Добавляет возможность поиска в профиле',
-            url: 'https://gist.githubusercontent.com/Dima-programmer/ca1d842c672ed355d036cf97b91526b6/raw/9b0abb1dd557951ddd354707eecc240d56bfe4d7/ProfileSearch.txt'
-        },
-        {
-            id: 'suggestion',
-            name: 'Скрыть "Кого читать"',
-            auth: '@dmitrii_gr (#дым)',
-            desc: 'Убирает плашку "Кого читать"',
-            url: 'https://gist.githubusercontent.com/Dima-programmer/76854a744e67fbfbcf29669d37693eea/raw/09269fd155693e4ea1eb81e94fda11ff3ae43b55/SuggestionsHide.txt'
-        }
+        { id: 'fresh', name: 'ITD Свежак', auth: '@l1ka11', desc: 'Автоматически скрывает посты, опубликованные более 24 часов назад.', url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/itdfresh.txt' },
+        { id: 'zoom', name: 'ITD Приближение', auth: '@l1kaa11', desc: 'Позволяет увеличивать изображения при нажатии и прокрутке колесиком.', url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/itdscrollphoto.txt' },
+        { id: 'counter', name: 'ITD Счетчик', auth: '@l1kaa11', desc: 'Отображает точное количество загруженных постов в текущей ленте.', url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/itdpostcounter.txt' },
+        { id: 'backgrounds', name: 'ITD Фоны', auth: '@l1kaa11', desc: 'Применяет кастомные задние планы и анимированные GIF-фоны.', url: 'https://raw.githubusercontent.com/kirillsql1kaa11/ITD-Extended-Client/main/modules/ITDbackground.txt' },
+        { id: 'profilesear', name: 'Profile Search', auth: '@dmitrii_gr (#дым)', desc: 'Добавляет возможность поиска в профиле', url: 'https://raw.githubusercontent.com/Dima-programmer/ITD_EXTENDED_MY_SCRIPTS/main/Profile%20Search.txt' },
+        { id: 'suggestion', name: 'Скрыть не нужное', auth: '@dmitrii_gr (#дым)', desc: 'Скрывает "Кого читать" и "Топ кланов"', url: 'https://raw.githubusercontent.com/Dima-programmer/ITD_EXTENDED_MY_SCRIPTS/main/HideBars.txt' }
     ];
 
     let customModules = GM_getValue('custom_modules_v2', []);
@@ -85,33 +32,30 @@
         #itd-gui .gui-body::-webkit-scrollbar { width: 4px; }
         #itd-gui .gui-body::-webkit-scrollbar-track { background: transparent; }
         #itd-gui .gui-body::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        #itd-gui .gui-body:hover::-webkit-scrollbar-thumb { background: #444; }
         #itd-gui { position: fixed; top: 10%; left: 10%; width: 80%; height: 80%; background: #08080a; border: 1px solid #222; border-radius: 30px; z-index: 999998; display: none; color: white; flex-direction: column; overflow: hidden; box-shadow: 0 0 150px rgba(0,0,0,0.9); font-family: system-ui, sans-serif; }
         .gui-head { padding: 25px 35px; background: #111114; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        .gui-body { flex: 1; padding: 30px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-content: start; scrollbar-width: thin; scrollbar-color: #333 transparent; }
-        .mod-card { background: #141417; border: 1px solid #222; padding: 20px; border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: 0.2s; }
+        .gui-body { flex: 1; padding: 30px; overflow-y: auto; scrollbar-width: thin; }
+        
+        .section-title { width: 100%; padding: 15px 0 10px 0; margin-bottom: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #555; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 10px; }
+        .section-title span { color: #007aff; font-weight: bold; }
+
+        .mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+        .mod-card { background: #141417; border: 1px solid #222; padding: 20px; border-radius: 20px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s; }
         .active-border { border-left: 5px solid #007aff !important; background: #18181c !important; }
+        .custom-card { border-left: 2px dashed #333; }
+        
         .mod-name { font-weight: bold; font-size: 18px; color: #fff; margin-bottom: 4px; }
-        .mod-author { font-size: 11px; color: #007aff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .mod-author { font-size: 11px; color: #007aff; text-transform: uppercase; margin-bottom: 8px; }
         .mod-desc { font-size: 13px; color: #888; line-height: 1.4; margin-bottom: 15px; }
         .tgl-btn { padding: 12px; border-radius: 12px; cursor: pointer; border: none; font-weight: bold; width: 100%; transition: 0.2s; }
         .on { background: #28a745; color: #fff; }
         .off { background: #222; color: #888; border: 1px solid #333; }
-        .upload-zone { grid-column: 1 / -1; background: #111114; border: 2px dashed #333; padding: 20px; border-radius: 20px; text-align: center; cursor: pointer; color: #007aff; font-weight: bold; margin-bottom: 10px; }
-        #itd-sidebar-btn svg { transition: transform 0.3s ease; }
-        #itd-sidebar-btn:hover svg { transform: rotate(45deg); color: #007aff; }
+        .upload-zone { background: #111114; border: 2px dashed #007aff; padding: 30px; border-radius: 20px; text-align: center; cursor: pointer; color: #007aff; font-weight: bold; margin-bottom: 30px; transition: 0.3s; }
+        .upload-zone:hover { background: rgba(0, 122, 255, 0.05); }
     `);
 
     const Client = {
         init() {
-            // Создаем мост для API в глобальном окне
-            window.ITD_GM_BRIDGE = {
-                getValue: GM_getValue,
-                setValue: GM_setValue,
-                xmlHttpRequest: GM_xmlhttpRequest,
-                addStyle: GM_addStyle
-            };
-
             this.createModal();
             this.injectSidebarButton();
             this.runScripts();
@@ -141,13 +85,18 @@
             gui.id = 'itd-gui';
             gui.innerHTML = `
                 <div class="gui-head">
-                    <div><h2 style="margin:0;">ITD Extended Client 1.4.3</h2><small style="color:#007aff">Интерфейс управления модулями</small></div>
+                    <div><h2 style="margin:0;">ITD Extended Client 1.4.7</h2><small style="color:#007aff">Менеджер расширений</small></div>
                     <span id="itd-close" style="cursor:pointer; font-size:28px;">✕</span>
                 </div>
                 <div class="gui-body">
-                    <div class="upload-zone" id="itd-upload">ЗАГРУЗИТЬ СВОЙ СКРИПТ (.JS / .TXT)</div>
+                    <div class="upload-zone" id="itd-upload">+ ЗАГРУЗИТЬ ПОЛЬЗОВАТЕЛЬСКИЙ СКРИПТ (.JS / .TXT)</div>
                     <input type="file" id="itd-file-input" style="display:none" accept=".js,.txt">
-                    <div id="mod-container" style="display:contents"></div>
+                    
+                    <div class="section-title"><span>●</span> Предустановленные модули</div>
+                    <div id="default-mod-container" class="mod-grid"></div>
+
+                    <div class="section-title"><span>●</span> Ваши скрипты</div>
+                    <div id="custom-mod-container" class="mod-grid"></div>
                 </div>
             `;
             document.body.appendChild(gui);
@@ -156,50 +105,44 @@
             document.getElementById('itd-file-input').onchange = (e) => this.handleFile(e);
         },
 
-        handleFile(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                customModules.push({ id: 'c' + Date.now(), name: file.name, auth: 'Вы', desc: 'Локальный файл', code: ev.target.result, active: true });
-                GM_setValue('custom_modules_v2', customModules);
-                location.reload();
-            };
-            reader.readAsText(file);
-        },
-
-        deleteModule(id) {
-            if (confirm('Вы уверены, что хотите удалить этот скрипт?')) {
-                customModules = customModules.filter(x => x.id !== id);
-                GM_setValue('custom_modules_v2', customModules);
-                this.renderModules(); 
-            }
-        },
-
         renderModules() {
-            const container = document.getElementById('mod-container');
-            const all = [
-                ...defaultModules.map(m => ({...m, active: GM_getValue('m_' + m.id, false), isLocal: false})),
-                ...customModules.map(m => ({...m, isLocal: true}))
-            ];
+            const defContainer = document.getElementById('default-mod-container');
+            const custContainer = document.getElementById('custom-mod-container');
 
-            container.innerHTML = all.map(m => `
-                <div class="mod-card ${m.active ? 'active-border' : ''}">
+            const renderCard = (m, isLocal) => `
+                <div class="mod-card ${m.active ? 'active-border' : ''} ${isLocal ? 'custom-card' : ''}">
                     <div>
                         <div class="mod-name">${m.name}</div>
                         <div class="mod-author">Автор: ${m.auth || 'Неизвестен'}</div>
                         <div class="mod-desc">${m.desc || 'Описание отсутствует.'}</div>
                     </div>
                     <div style="display:flex; flex-direction:column; gap: 8px;">
-                        <button class="tgl-btn ${m.active ? 'on' : 'off'}" data-id="${m.id}" data-local="${m.isLocal}">
+                        <button class="tgl-btn ${m.active ? 'on' : 'off'}" data-id="${m.id}" data-local="${isLocal}">
                             ${m.active ? 'ДЕАКТИВИРОВАТЬ' : 'АКТИВИРОВАТЬ'}
                         </button>
-                        ${m.isLocal ? `<button class="del-script-btn" style="color:#ff4444; background:none; border:none; cursor:pointer; font-size:11px;" data-id="${m.id}">Удалить скрипт</button>` : ''}
+                        ${isLocal ? `<button class="del-script-btn" style="color:#ff4444; background:none; border:none; cursor:pointer; font-size:11px; margin-top:5px;" data-id="${m.id}">Удалить файл</button>` : ''}
                     </div>
                 </div>
-            `).join('');
+            `;
 
-            container.querySelectorAll('.tgl-btn').forEach(b => {
+            // Отрисовка дефолтных
+            defContainer.innerHTML = defaultModules.map(m => {
+                const active = GM_getValue('m_' + m.id, false);
+                return renderCard({...m, active}, false);
+            }).join('');
+
+            // Отрисовка кастомных
+            if (customModules.length === 0) {
+                custContainer.innerHTML = '<div style="grid-column:1/-1; color:#444; text-align:center; padding:20px;">У вас пока нет добавленных скриптов</div>';
+            } else {
+                custContainer.innerHTML = customModules.map(m => renderCard(m, true)).join('');
+            }
+
+            this.bindEvents();
+        },
+
+        bindEvents() {
+            document.querySelectorAll('.tgl-btn').forEach(b => {
                 b.onclick = () => {
                     const id = b.dataset.id;
                     if (b.dataset.local === 'true') {
@@ -213,16 +156,34 @@
                 };
             });
 
-            container.querySelectorAll('.del-script-btn').forEach(b => {
-                b.onclick = () => this.deleteModule(b.dataset.id);
+            document.querySelectorAll('.del-script-btn').forEach(b => {
+                b.onclick = () => {
+                    if (confirm('Удалить этот скрипт?')) {
+                        customModules = customModules.filter(x => x.id !== b.dataset.id);
+                        GM_setValue('custom_modules_v2', customModules);
+                        this.renderModules();
+                    }
+                };
             });
+        },
+
+        handleFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                customModules.push({ id: 'c' + Date.now(), name: file.name, auth: 'Локально', desc: 'Ваш загруженный скрипт', code: ev.target.result, active: true });
+                GM_setValue('custom_modules_v2', customModules);
+                location.reload();
+            };
+            reader.readAsText(file);
         },
 
         runScripts() {
             defaultModules.forEach(m => {
                 if (GM_getValue('m_' + m.id, false) && m.url) {
                     GM_xmlhttpRequest({
-                        method: "GET", url: m.url + '?v=' + Date.now(),
+                        method: "GET", url: m.url,
                         onload: (res) => { if (res.status === 200) this.inject(res.responseText, m.name); }
                     });
                 }
@@ -233,24 +194,9 @@
         inject(code, name) {
             try {
                 const script = document.createElement('script');
-                // Оборачиваем код для предоставления доступа к API через мост
-                const wrappedCode = `(function() {
-                    const GM_getValue = window.ITD_GM_BRIDGE.getValue;
-                    const GM_setValue = window.ITD_GM_BRIDGE.setValue;
-                    const GM_xmlhttpRequest = window.ITD_GM_BRIDGE.xmlHttpRequest;
-                    const GM_addStyle = window.ITD_GM_BRIDGE.addStyle;
-                    
-                    try {
-                        ${code}
-                    } catch(e) {
-                        console.error("[ITD Module Error] ${name}:", e);
-                    }
-                })();`;
-                
-                const blob = new Blob([wrappedCode], { type: 'text/javascript' });
+                const blob = new Blob([code], { type: 'text/javascript' });
                 script.src = URL.createObjectURL(blob);
                 document.head.appendChild(script);
-                console.log(`[ITD] Успешно запущен: ${name}`);
             } catch (e) { console.error(`[ITD] Fail: ${name}`, e); }
         }
     };
