@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         ITD Extended Client 1.0
-// @version      1.0
+// @name         ITD Extended Client 1.1
+// @version      1.1
 // @description  Исправлены некоторые скрипты итд
 // @author       l1kaa11
 // @match        https://xn--d1ah4a.com/*
@@ -68,6 +68,13 @@
             auth: '@dmitrii_gr (#дым)',
             desc: 'Убирает плашку "Кого читать"',
             url: 'https://gist.githubusercontent.com/Dima-programmer/76854a744e67fbfbcf29669d37693eea/raw/09269fd155693e4ea1eb81e94fda11ff3ae43b55/SuggestionsHide.txt'
+        },
+        {
+            id: 'kaall',
+            name: 'KAALITION AI',
+            auth: 'NewsOfficial',
+            desc: 'Расширение которое добавляет ИИ чат',
+            url: 'https://raw.githubusercontent.com/GleTur/KAALITION_AI/main/kaalition-ai.user.V5.js'
         }
     ];
 
