@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         ITD Extended Client 1.1
-// @version      1.1
+// @name         ITD Extended Client 1.2
+// @version      1.2
 // @description  Исправлены некоторые скрипты итд
 // @author       l1kaa11
 // @match        https://xn--d1ah4a.com/*
