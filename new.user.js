@@ -12,9 +12,9 @@
 // @connect      raw.githubusercontent.com
 // @connect      api.groq.com
 // @run-at       document-end
-// @namespace    https://github.com/kirillsql1kaa11/ITD-Extended-Client
-// @updateURL    https://github.com/kirillsql1kaa11/ITD-Extended-Client/raw/refs/heads/main/ITDEXT.user.js
-// @downloadURL  https://github.com/kirillsql1kaa11/ITD-Extended-Client/raw/refs/heads/main/ITDEXT.user.js
+// @namespace    https://github.com/kirillsql1kaa11/test
+// @updateURL    https://github.com/kirillsql1kaa11/test/raw/refs/heads/main/ITDEXT.user.js
+// @downloadURL  https://github.com/kirillsql1kaa11/test/raw/refs/heads/main/ITDEXT.user.js
 // ==/UserScript==
 
 (function() {
