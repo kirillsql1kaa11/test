@@ -74,7 +74,7 @@
             name: 'KAALITION AI',
             auth: 'NewsOfficial',
             desc: 'Расширение которое добавляет ИИ чат',
-            url: 'https://raw.githubusercontent.com/GleTur/KAALITION_AI/main/kaalition-ai.user.V5.js'
+            url: 'https://raw.githubusercontent.com/GleTur/KAALITION_AI/main/kaalition-ai.txt'
         }
     ];
 
